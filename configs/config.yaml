@@ -1,0 +1,10 @@
+server:
+  port: "8080"
+  mode: "debug"
+
+database:
+  dsn: "host=localhost user=hyadmin password=hyadmin dbname=hyadmin port=5432 sslmode=disable"
+
+log:
+  level: "debug"
+  filename: "logs/hyadmin-api.log"

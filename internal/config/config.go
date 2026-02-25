@@ -1,0 +1,50 @@
+package config
+
+import (
+	"log"
+
+	"github.com/spf13/viper"
+)
+
+type Config struct {
+	Server   ServerConfig   `mapstructure:"server"`
+	Database DatabaseConfig `mapstructure:"database"`
+	Log      LogConfig      `mapstructure:"log"`
+}
+
+type ServerConfig struct {
+	Port string `mapstructure:"port"`
+	Mode string `mapstructure:"mode"`
+}
+
+type DatabaseConfig struct {
+	DSN string `mapstructure:"dsn"`
+}
+
+type LogConfig struct {
+	Level    string `mapstructure:"level"`
+	Filename string `mapstructure:"filename"`
+}
+
+func Load() *Config {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("configs/")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+
+	viper.SetDefault("server.port", "8080")
+	viper.SetDefault("server.mode", "debug")
+	viper.SetDefault("log.level", "info")
+	viper.SetDefault("log.filename", "logs/hyadmin-api.log")
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Printf("config file not found, using defaults: %v", err)
+	}
+
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		log.Fatalf("failed to unmarshal config: %v", err)
+	}
+	return &cfg
+}
