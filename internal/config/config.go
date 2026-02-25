@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -31,6 +32,8 @@ func Load() *Config {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("configs/")
 	viper.AddConfigPath(".")
+	// 讓 DATABASE_DSN → database.dsn, SERVER_PORT → server.port
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
 	viper.SetDefault("server.port", "8080")

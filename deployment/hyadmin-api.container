@@ -1,0 +1,37 @@
+# Podman Quadlet - HySP Admin API
+#
+# 安裝方式：
+#   sudo cp hyadmin-api.container /etc/containers/systemd/hyadmin-api.container
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now hyadmin-api
+#
+# 之後操作：
+#   sudo systemctl restart hyadmin-api
+#   sudo systemctl status hyadmin-api
+#   sudo journalctl -u hyadmin-api -f
+
+[Unit]
+Description=HySP Admin API (Go + Gin)
+After=network.target
+
+[Container]
+Image=localhost/hyadmin-api:latest
+PublishPort=127.0.0.1:8080:8080
+
+# 連 host 上的 PostgreSQL
+AddHost=host-gateway:host-gateway
+
+# DB 連線（密碼建議改用 EnvironmentFile）
+EnvironmentFile=/etc/hyadmin/api.env
+
+# Log
+LogDriver=journald
+
+[Service]
+Restart=always
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target
