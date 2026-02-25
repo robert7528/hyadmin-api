@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hysp/hyadmin-api/internal/config"
+	"github.com/hysp/hyadmin-api/internal/database"
 	"github.com/hysp/hyadmin-api/internal/health"
 	"github.com/hysp/hyadmin-api/internal/middleware"
 	"github.com/hysp/hyadmin-api/internal/module"
@@ -30,10 +31,11 @@ func New(cfg *config.Config, log *zap.Logger) *Server {
 // RouteParams groups all handler dependencies for fx injection.
 type RouteParams struct {
 	fx.In
-	Server   *Server
-	Health   *health.Handler
-	Tenant   *tenant.Handler
-	Registry *module.Registry
+	Server    *Server
+	Health    *health.Handler
+	Tenant    *tenant.Handler
+	Registry  *module.Registry
+	DBManager *database.DBManager
 }
 
 func RegisterRoutes(p RouteParams) {
@@ -44,9 +46,11 @@ func RegisterRoutes(p RouteParams) {
 
 	api := r.Group("/api/v1")
 	{
+		// Health + module registry — no tenant DB required
 		api.GET("/health", p.Health.Check)
 		api.GET("/modules", p.Registry.ListModules)
 
+		// Admin routes — use admin DB (tenant CRUD)
 		tenants := api.Group("/tenants")
 		{
 			tenants.GET("", p.Tenant.List)
@@ -54,6 +58,16 @@ func RegisterRoutes(p RouteParams) {
 			tenants.GET("/:id", p.Tenant.Get)
 			tenants.PUT("/:id", p.Tenant.Update)
 			tenants.DELETE("/:id", p.Tenant.Delete)
+		}
+
+		// Business data routes — tenant DB injected via TenantDBMiddleware.
+		// Add sub-module routers here; use middleware.GetTenantDB(c) in handlers.
+		data := api.Group("/data")
+		data.Use(middleware.TenantDBMiddleware(p.DBManager))
+		{
+			// Example placeholder — replace with real business handlers:
+			// data.GET("/records", recordHandler.List)
+			_ = data
 		}
 	}
 }

@@ -18,5 +18,8 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 }
 
 func Migrate(db *gorm.DB) error {
-	return db.AutoMigrate(&tenant.Tenant{})
+	return db.AutoMigrate(
+		&tenant.Tenant{},
+		&TenantDBConfig{},
+	)
 }

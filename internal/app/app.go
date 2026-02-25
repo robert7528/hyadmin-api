@@ -17,6 +17,7 @@ func Run() error {
 			config.Load,
 			logger.New,
 			database.Connect,
+			database.NewManager,
 			server.New,
 			module.NewRegistry,
 			tenant.NewRepository,
