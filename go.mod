@@ -3,6 +3,8 @@ module github.com/hysp/hyadmin-api
 go 1.22
 
 require (
+	ariga.io/atlas v0.19.1
+	ariga.io/atlas-provider-gorm v0.4.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0

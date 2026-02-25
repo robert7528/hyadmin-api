@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# HySP Admin API - Deployment Script
+# HySP Admin API - Deployment Script (Podman)
 # Usage: sudo bash /hysp/hyadmin-api/deployment/deploy.sh
 
 set -euo pipefail
@@ -10,14 +10,11 @@ QUADLET_SRC="$APP_DIR/deployment/hyadmin-api.container"
 QUADLET_DEST="/etc/containers/systemd/hyadmin-api.container"
 ENV_DEST="/etc/hyadmin/api.env"
 
-echo "=== [1/5] Pull latest code ==="
+echo "=== [1/6] Pull latest code ==="
 cd "$APP_DIR"
 git pull
 
-echo "=== [2/5] Build container image ==="
-podman build -t "$IMAGE" .
-
-echo "=== [3/5] Setup env file (if not exists) ==="
+echo "=== [2/6] Setup env file (if not exists) ==="
 if [ ! -f "$ENV_DEST" ]; then
     mkdir -p /etc/hyadmin
     cp "$APP_DIR/deployment/api.env.example" "$ENV_DEST"
@@ -29,11 +26,25 @@ if [ ! -f "$ENV_DEST" ]; then
     exit 1
 fi
 
-echo "=== [4/5] Install Quadlet file ==="
+echo "=== [3/6] Run admin DB migrations ==="
+# Ensure Atlas CLI is installed
+if ! command -v atlas &>/dev/null; then
+    echo "Installing Atlas CLI..."
+    curl -sSf https://atlasgo.sh | sh
+fi
+# Load ADMIN_DATABASE_URL from env file for Atlas
+export ADMIN_DATABASE_URL=$(grep '^DATABASE_DSN=' "$ENV_DEST" | cut -d= -f2-)
+# Convert libpq DSN to URL format if needed (Atlas env=prod uses ADMIN_DATABASE_URL)
+go run ./cmd/migrate admin
+
+echo "=== [4/6] Build container image ==="
+podman build -t "$IMAGE" .
+
+echo "=== [5/6] Install Quadlet file ==="
 cp "$QUADLET_SRC" "$QUADLET_DEST"
 systemctl daemon-reload
 
-echo "=== [5/5] Enable & restart service ==="
+echo "=== [6/6] Enable & restart service ==="
 systemctl enable hyadmin-api
 systemctl restart hyadmin-api
 systemctl status hyadmin-api --no-pager
