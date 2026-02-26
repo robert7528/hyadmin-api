@@ -8,3 +8,9 @@ database:
 log:
   level: "debug"
   filename: "logs/hyadmin-api.log"
+
+jwt:
+  expiry_hours: 24
+  # secret: override via JWT_SECRET env
+
+# tink.keyset: override via TINK_KEYSET env (cleartext JSON keyset for dev)

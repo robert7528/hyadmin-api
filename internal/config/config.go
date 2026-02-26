@@ -11,6 +11,17 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
 	Log      LogConfig      `mapstructure:"log"`
+	JWT      JWTConfig      `mapstructure:"jwt"`
+	Tink     TinkConfig     `mapstructure:"tink"`
+}
+
+type JWTConfig struct {
+	Secret      string `mapstructure:"secret"`
+	ExpiryHours int    `mapstructure:"expiry_hours"`
+}
+
+type TinkConfig struct {
+	Keyset string `mapstructure:"keyset"` // JSON keyset, injected via TINK_KEYSET env
 }
 
 type ServerConfig struct {
@@ -40,6 +51,7 @@ func Load() *Config {
 	viper.SetDefault("server.mode", "debug")
 	viper.SetDefault("log.level", "info")
 	viper.SetDefault("log.filename", "logs/hyadmin-api.log")
+	viper.SetDefault("jwt.expiry_hours", 24)
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Printf("config file not found, using defaults: %v", err)
