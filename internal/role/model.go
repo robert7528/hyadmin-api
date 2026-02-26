@@ -6,6 +6,9 @@ import (
 	"gorm.io/gorm"
 )
 
+func (Role) TableName() string    { return "hyadmin_roles" }
+func (UserRole) TableName() string { return "hyadmin_user_roles" }
+
 type Role struct {
 	ID          uint           `gorm:"primaryKey" json:"id"`
 	TenantCode  string         `gorm:"index;not null" json:"tenant_code"`

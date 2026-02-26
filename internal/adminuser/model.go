@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+func (AdminUser) TableName() string { return "hyadmin_users" }
+
 // AdminUser stores platform administrators.
 // PII fields (display_name, email) are encrypted with Tink before persisting.
 type AdminUser struct {

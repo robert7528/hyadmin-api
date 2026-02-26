@@ -11,7 +11,7 @@ import (
 // The model is loaded from the given conf file path.
 // EnableAutoSave ensures policy changes persist to casbin_rule automatically.
 func NewEnforcer(db *gorm.DB, modelPath string) (*casbin.Enforcer, error) {
-	adapter, err := gormadapter.NewAdapterByDB(db)
+	adapter, err := gormadapter.NewAdapterByDBUseTableName(db, "", "hyadmin_casbin_rules")
 	if err != nil {
 		return nil, err
 	}

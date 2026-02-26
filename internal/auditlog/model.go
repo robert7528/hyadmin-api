@@ -2,6 +2,8 @@ package auditlog
 
 import "time"
 
+func (AuditLog) TableName() string { return "hyadmin_audit_logs" }
+
 // AuditLog records every write action performed by admin users.
 type AuditLog struct {
 	ID         uint      `gorm:"primaryKey" json:"id"`
