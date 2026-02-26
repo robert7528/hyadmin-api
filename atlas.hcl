@@ -18,7 +18,7 @@ data "external_schema" "gorm" {
 # ── Admin DB (Tenant, TenantDBConfig tables) ──────────────────────────────────
 env "local" {
   src = data.external_schema.gorm.url
-  url = "postgres://hyadmin:hyadmin@localhost:5432/hysp?sslmode=disable"
+  url = "postgres://hysp:hysp@localhost:5432/hysp?sslmode=disable"
   migration {
     dir = "file://migrations/admin"
   }
