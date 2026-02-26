@@ -15,7 +15,7 @@ Description=HySP Admin API (Go + Gin)
 After=network.target
 
 [Container]
-Image=localhost/hyadmin-api:latest
+Image=ghcr.io/robert7528/hyadmin-api:latest
 PublishPort=127.0.0.1:8080:8080
 
 # 連 host 上的 PostgreSQL
