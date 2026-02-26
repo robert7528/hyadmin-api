@@ -4,7 +4,7 @@ import (
 	"github.com/hysp/hyadmin-api/internal/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinish/lumberjack.v2"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 )
 

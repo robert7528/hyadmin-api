@@ -15,7 +15,7 @@ require (
 	go.uber.org/fx v1.22.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.26.0
-	gopkg.in/natefinish/lumberjack.v2 v2.2.1
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.11
 	gorm.io/plugin/dbresolver v1.5.3
