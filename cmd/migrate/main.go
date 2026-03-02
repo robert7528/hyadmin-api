@@ -7,6 +7,7 @@ import (
 
 	"github.com/hysp/hyadmin-api/internal/config"
 	"github.com/hysp/hyadmin-api/internal/database"
+	"github.com/hysp/hyadmin-api/internal/migrator"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +39,7 @@ func adminCmd() *cobra.Command {
 				return fmt.Errorf("connect admin DB: %w", err)
 			}
 			fmt.Println("Applying admin migrations...")
-			if err := database.MigrateAdmin(context.Background(), db, adminMigrationsDir); err != nil {
+			if err := migrator.Admin(context.Background(), db, adminMigrationsDir); err != nil {
 				return err
 			}
 			fmt.Println("Admin migrations applied successfully.")
@@ -93,7 +94,7 @@ func allTenantsCmd() *cobra.Command {
 					failed = append(failed, cfg.TenantCode)
 					continue
 				}
-				if err := database.MigrateTenant(ctx, tenantDB, tenantMigrationsDir, cfg.Schema); err != nil {
+				if err := migrator.Tenant(ctx, tenantDB, tenantMigrationsDir, cfg.Schema); err != nil {
 					fmt.Printf(" ERROR: %v\n", err)
 					failed = append(failed, cfg.TenantCode)
 					continue
@@ -129,7 +130,7 @@ func applyTenantMigration(tenantCode string) error {
 	}
 
 	fmt.Printf("Applying tenant migrations for %q ...\n", tenantCode)
-	if err := database.MigrateTenant(context.Background(), tenantDB, tenantMigrationsDir, tenantCfg.Schema); err != nil {
+	if err := migrator.Tenant(context.Background(), tenantDB, tenantMigrationsDir, tenantCfg.Schema); err != nil {
 		return err
 	}
 	fmt.Printf("Tenant %q migrations applied successfully.\n", tenantCode)
