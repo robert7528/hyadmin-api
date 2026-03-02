@@ -11,7 +11,7 @@
 data "external_schema" "gorm" {
   program = [
     "go", "run", "-mod=mod",
-    "./internal/database/loader",
+    "./internal/database/loader/main.go",
   ]
 }
 
