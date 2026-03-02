@@ -4,8 +4,8 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o hyadmin-api ./cmd/server
-RUN CGO_ENABLED=0 GOOS=linux go build -o hyadmin-migrate ./cmd/migrate
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=mod -o hyadmin-api ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=mod -o hyadmin-migrate ./cmd/migrate
 
 FROM alpine:3.20
 
