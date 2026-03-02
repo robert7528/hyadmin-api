@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+func (PlatformModule) TableName() string { return "hyadmin_modules" }
+
 // PlatformModule represents a top-level navigation module (tab in header).
 type PlatformModule struct {
 	ID          uint           `gorm:"primaryKey" json:"id"`

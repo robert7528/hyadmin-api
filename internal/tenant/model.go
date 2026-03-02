@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+func (Tenant) TableName() string { return "hyadmin_tenants" }
+
 type Tenant struct {
 	ID          uint           `gorm:"primaryKey" json:"id"`
 	Code        string         `gorm:"uniqueIndex;not null" json:"code"`

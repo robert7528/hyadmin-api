@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+func (Feature) TableName() string { return "hyadmin_features" }
+
 // Feature is a sidebar menu item belonging to a PlatformModule.
 type Feature struct {
 	ID        uint           `gorm:"primaryKey" json:"id"`

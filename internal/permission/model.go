@@ -6,6 +6,9 @@ import (
 	"gorm.io/gorm"
 )
 
+func (Permission) TableName() string    { return "hyadmin_permissions" }
+func (RolePermission) TableName() string { return "hyadmin_role_permissions" }
+
 // Permission is a fine-grained access control point belonging to a Feature.
 // Code format: {module}.{feature}.{action}  e.g. "users.list.delete"
 type Permission struct {

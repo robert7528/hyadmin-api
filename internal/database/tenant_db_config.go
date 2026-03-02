@@ -5,6 +5,8 @@ import "time"
 // TenantDBConfig stores per-tenant database connection settings in the admin DB.
 // Mode "database": each tenant uses its own database (different DSNs).
 // Mode "schema":   tenants share the same database but use separate PostgreSQL schemas.
+func (TenantDBConfig) TableName() string { return "hyadmin_tenant_db_configs" }
+
 type TenantDBConfig struct {
 	ID         uint   `gorm:"primaryKey" json:"id"`
 	TenantCode string `gorm:"uniqueIndex;not null" json:"tenant_code"`
