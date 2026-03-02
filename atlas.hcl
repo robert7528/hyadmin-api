@@ -17,8 +17,9 @@ data "external_schema" "gorm" {
 
 # ── Admin DB (Tenant, TenantDBConfig tables) ──────────────────────────────────
 env "local" {
-  src = data.external_schema.gorm.url
-  url = getenv("ADMIN_DATABASE_URL")
+  src     = data.external_schema.gorm.url
+  url     = getenv("ADMIN_DATABASE_URL")
+  dev     = getenv("ADMIN_DEV_DATABASE_URL")
   migration {
     dir = "file://migrations/admin"
   }
