@@ -44,12 +44,12 @@ func apply(ctx context.Context, gormDB *gorm.DB, dir, schema string) error {
 		return fmt.Errorf("open migrations dir %q: %w", dir, err)
 	}
 
-	ex, err := migrate.NewExecutor(driver, localDir, migrate.WithLogger(migrate.NopLogger))
+	ex, err := migrate.NewExecutor(driver, localDir, migrate.NopRevisionReadWriter{}, migrate.WithLogger(migrate.NopLogger{}))
 	if err != nil {
 		return fmt.Errorf("create executor: %w", err)
 	}
 
-	if _, err := ex.Execute(ctx, 0); err != nil {
+	if err := ex.ExecuteN(ctx, 0); err != nil {
 		return fmt.Errorf("apply migrations: %w", err)
 	}
 	return nil
