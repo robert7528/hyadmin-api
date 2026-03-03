@@ -148,8 +148,8 @@ func RegisterRoutes(p RouteParams) {
 				mods.PUT("/:id", p.Module.Update)
 				mods.DELETE("/:id", p.Module.Delete)
 				// Features under a module
-				mods.GET("/:moduleId/features", p.Feature.ListByModule)
-				mods.POST("/:moduleId/features", p.Feature.Create)
+				mods.GET("/:id/features", p.Feature.ListByModule)
+				mods.POST("/:id/features", p.Feature.Create)
 			}
 
 			// Features (individual)
