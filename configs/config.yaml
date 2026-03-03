@@ -13,4 +13,10 @@ jwt:
   expiry_hours: 24
   # secret: override via JWT_SECRET env
 
+  # OIDC / Keycloak 整合（留空 = 使用本地 JWT）
+  # 啟用後 ParseToken 將改用 JWKS 公鑰驗證（RS256），不再使用 secret
+  # issuer: "https://keycloak.example.com/realms/hysp"
+  # jwks_uri: "https://keycloak.example.com/realms/hysp/protocol/openid-connect/certs"
+  # audience: "hyadmin-api"
+
 # tink.keyset: override via TINK_KEYSET env (cleartext JSON keyset for dev)

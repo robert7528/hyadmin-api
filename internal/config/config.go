@@ -18,6 +18,14 @@ type Config struct {
 type JWTConfig struct {
 	Secret      string `mapstructure:"secret"`
 	ExpiryHours int    `mapstructure:"expiry_hours"`
+
+	// OIDC / Keycloak 整合（未來使用，目前留空即使用本地 JWT）
+	// Issuer:   Keycloak realm URL, e.g. https://keycloak.example.com/realms/hysp
+	// JWKSUri:  自動從 Issuer 取得，或手動指定 JWKS endpoint
+	// Audience: JWT aud claim 驗證（通常為 client_id）
+	Issuer   string `mapstructure:"issuer"`
+	JWKSUri  string `mapstructure:"jwks_uri"`
+	Audience string `mapstructure:"audience"`
 }
 
 type TinkConfig struct {
