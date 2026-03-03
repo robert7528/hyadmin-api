@@ -335,7 +335,7 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 
 	// ── 10. Assign permissions to super_admin ──────────────────
 	for _, perm := range seededPerms {
-		rp := role.RolePermission{
+		rp := permission.RolePermission{
 			RoleID:       superRole.ID,
 			PermissionID: perm.ID,
 		}
