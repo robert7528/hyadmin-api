@@ -6,12 +6,14 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -mod=mod -o hyadmin-api ./cmd/server
 RUN CGO_ENABLED=0 GOOS=linux go build -mod=mod -o hyadmin-migrate ./cmd/migrate
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=mod -o hyadmin-seed ./cmd/seed
 
 FROM alpine:3.20
 
 WORKDIR /app
 COPY --from=builder /app/hyadmin-api .
 COPY --from=builder /app/hyadmin-migrate .
+COPY --from=builder /app/hyadmin-seed .
 COPY configs/ configs/
 COPY migrations/ migrations/
 COPY deployment/entrypoint.sh entrypoint.sh

@@ -17,12 +17,12 @@ type TenantDBConfig struct {
 	// Primary (write) connection DSN.
 	// Supports libpq key=value format or postgres:// URL format.
 	// TODO: encrypt at rest before storing.
-	PrimaryDSN string `gorm:"not null" json:"-"`
+	PrimaryDSN string `gorm:"column:primary_dsn;not null" json:"-"`
 
 	// Replica (read) DSNs — JSON-encoded []string.
 	// Empty means no read replicas (all queries go to primary).
 	// TODO: encrypt at rest before storing.
-	ReplicaDSNs string `gorm:"type:text" json:"-"`
+	ReplicaDSNs string `gorm:"column:replica_dsns;type:text" json:"-"`
 
 	// PostgreSQL schema name — used only when Mode == "schema".
 	// If set, search_path is applied to every connection automatically.

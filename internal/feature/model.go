@@ -14,6 +14,7 @@ type Feature struct {
 	ModuleID  uint           `gorm:"index;not null" json:"module_id"`
 	Name      string         `gorm:"not null" json:"name"`
 	DisplayName string       `gorm:"not null" json:"display_name"`
+	I18n        string       `gorm:"type:jsonb;default:'{}'" json:"i18n,omitempty"`
 	Icon      string         `json:"icon"`
 	Path      string         `gorm:"not null" json:"path"` // URL path appended to module route
 	SortOrder int            `gorm:"default:0" json:"sort_order"`

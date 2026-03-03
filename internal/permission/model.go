@@ -16,6 +16,7 @@ type Permission struct {
 	FeatureID   uint           `gorm:"index;not null" json:"feature_id"`
 	Code        string         `gorm:"uniqueIndex;not null" json:"code"`
 	Name        string         `gorm:"not null" json:"name"`
+	I18n        string         `gorm:"type:jsonb;default:'{}'" json:"i18n,omitempty"`
 	Description string         `json:"description"`
 	Type        string         `gorm:"not null;default:'button'" json:"type"` // menu|button|api
 	SortOrder   int            `gorm:"default:0" json:"sort_order"`

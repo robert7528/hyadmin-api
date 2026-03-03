@@ -10,7 +10,7 @@
 # GORM model schema — Atlas CLI compiles & runs the loader to extract schema
 data "external_schema" "gorm" {
   program = [
-    "go", "run",
+    "go", "run", "-mod=mod",
     "./internal/database/loader/main.go",
   ]
 }

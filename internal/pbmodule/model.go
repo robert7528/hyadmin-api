@@ -13,6 +13,7 @@ type PlatformModule struct {
 	ID          uint           `gorm:"primaryKey" json:"id"`
 	Name        string         `gorm:"uniqueIndex;not null" json:"name"`
 	DisplayName string         `gorm:"not null" json:"display_name"`
+	I18n        string         `gorm:"type:jsonb;default:'{}'" json:"i18n,omitempty"`
 	Icon        string         `json:"icon"`
 	Route       string         `gorm:"not null" json:"route"`
 	URL         string         `json:"url"`
