@@ -35,7 +35,6 @@ podman pull "$IMAGE"
 
 cp "$QUADLET_SRC" "$QUADLET_DEST"
 systemctl daemon-reload
-systemctl enable hyadmin-api
 systemctl restart hyadmin-api
 systemctl status hyadmin-api --no-pager
 
