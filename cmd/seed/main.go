@@ -17,7 +17,9 @@ import (
 	"github.com/hysp/hyadmin-api/internal/config"
 	"github.com/hysp/hyadmin-api/internal/crypto"
 	"github.com/hysp/hyadmin-api/internal/database"
+	"github.com/hysp/hyadmin-api/internal/feature"
 	"github.com/hysp/hyadmin-api/internal/pbmodule"
+	"github.com/hysp/hyadmin-api/internal/permission"
 	"github.com/hysp/hyadmin-api/internal/role"
 	"github.com/hysp/hyadmin-api/internal/tenant"
 	"golang.org/x/crypto/bcrypt"
@@ -44,7 +46,19 @@ func main() {
 	fmt.Println("=== [seed] Completed successfully ===")
 }
 
+type casbinRule struct {
+	Ptype string `gorm:"column:ptype"`
+	V0    string `gorm:"column:v0"`
+	V1    string `gorm:"column:v1"`
+	V2    string `gorm:"column:v2"`
+	V3    string `gorm:"column:v3"`
+	V4    string `gorm:"column:v4"`
+	V5    string `gorm:"column:v5"`
+}
+
 func run(db *gorm.DB, enc crypto.Encryptor) error {
+	now := time.Now()
+
 	// ── 1. System tenant ──────────────────────────────────────
 	sysTenant := tenant.Tenant{
 		Code:      "system",
@@ -76,7 +90,6 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 		Provider:       "local",
 		Enabled:        true,
 	}
-	// Only create if not exists; never overwrite password.
 	existing := adminuser.AdminUser{}
 	res := db.Where("tenant_code = ? AND username = ?", "system", "admin").
 		First(&existing)
@@ -93,7 +106,6 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 	}
 
 	// ── 3. Platform modules ────────────────────────────────────
-	now := time.Now()
 	modules := []pbmodule.PlatformModule{
 		{
 			Name:        "tenants",
@@ -146,12 +158,14 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 			UpdatedAt:   now,
 		},
 	}
+	moduleMap := make(map[string]uint) // name → id
 	for i := range modules {
 		m := &modules[i]
 		if err := db.Where(pbmodule.PlatformModule{Name: m.Name}).
 			FirstOrCreate(m).Error; err != nil {
 			return fmt.Errorf("upsert module %q: %w", m.Name, err)
 		}
+		moduleMap[m.Name] = m.ID
 		fmt.Printf("  module: id=%d name=%s\n", m.ID, m.Name)
 	}
 
@@ -178,30 +192,18 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 	}
 	fmt.Printf("  user_role: user_id=%d role_id=%d\n", adminUser.ID, superRole.ID)
 
-	// ── 6. Casbin policies ─────────────────────────────────────
-	// g policy: user:N has role:M
-	// p policy: role:M can access * with act=access  (super_admin wildcard)
-	type casbinRule struct {
-		Ptype string `gorm:"column:ptype"`
-		V0    string `gorm:"column:v0"`
-		V1    string `gorm:"column:v1"`
-		V2    string `gorm:"column:v2"`
-		V3    string `gorm:"column:v3"`
-		V4    string `gorm:"column:v4"`
-		V5    string `gorm:"column:v5"`
-	}
-	casbinRules := []casbinRule{
+	// ── 6. Casbin base policies ────────────────────────────────
+	baseCasbinRules := []casbinRule{
 		{Ptype: "g", V0: fmt.Sprintf("user:%d", adminUser.ID), V1: fmt.Sprintf("role:%d", superRole.ID)},
 		{Ptype: "p", V0: fmt.Sprintf("role:%d", superRole.ID), V1: "*", V2: "access"},
 	}
-	for _, rule := range casbinRules {
+	for _, r := range baseCasbinRules {
 		if err := db.Table("hyadmin_casbin_rules").
 			Clauses(clause.OnConflict{DoNothing: true}).
-			Create(&rule).Error; err != nil {
-			return fmt.Errorf("insert casbin rule ptype=%s v0=%s: %w", rule.Ptype, rule.V0, err)
+			Create(&r).Error; err != nil {
+			return fmt.Errorf("insert casbin rule ptype=%s v0=%s: %w", r.Ptype, r.V0, err)
 		}
-		fmt.Printf("  casbin: ptype=%s v0=%s v1=%s v2=%s\n",
-			rule.Ptype, rule.V0, rule.V1, rule.V2)
+		fmt.Printf("  casbin: ptype=%s v0=%s v1=%s v2=%s\n", r.Ptype, r.V0, r.V1, r.V2)
 	}
 
 	// ── 7. Application settings ────────────────────────────────
@@ -237,6 +239,125 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 		}
 		fmt.Printf("  setting: %s=%s\n", s.Key, s.Value)
 	}
+
+	// ── 8. Features ────────────────────────────────────────────
+	type featureSeed struct {
+		ModuleCode  string
+		Name        string
+		DisplayName string
+		I18n        string
+		Path        string
+		SortOrder   int
+	}
+	featureSeeds := []featureSeed{
+		{"tenants", "tenant-list", "租戶列表", `{"zh-TW":"租戶列表","en":"Tenant List"}`, "", 1},
+		{"users", "user-list", "使用者列表", `{"zh-TW":"使用者列表","en":"User List"}`, "", 1},
+		{"rbac", "role-list", "角色管理", `{"zh-TW":"角色管理","en":"Role Management"}`, "/roles", 1},
+		{"audit", "audit-log", "稽核日誌", `{"zh-TW":"稽核日誌","en":"Audit Log"}`, "", 1},
+		{"settings", "settings", "系統設定", `{"zh-TW":"系統設定","en":"System Settings"}`, "", 1},
+	}
+	featureMap := make(map[string]feature.Feature) // name → feature
+	for _, fs := range featureSeeds {
+		f := feature.Feature{
+			ModuleID:    moduleMap[fs.ModuleCode],
+			Name:        fs.Name,
+			DisplayName: fs.DisplayName,
+			I18n:        fs.I18n,
+			Path:        fs.Path,
+			SortOrder:   fs.SortOrder,
+			Enabled:     true,
+			CreatedAt:   now,
+			UpdatedAt:   now,
+		}
+		if err := db.Where(feature.Feature{Name: fs.Name}).
+			FirstOrCreate(&f).Error; err != nil {
+			return fmt.Errorf("upsert feature %q: %w", fs.Name, err)
+		}
+		featureMap[f.Name] = f
+		fmt.Printf("  feature: id=%d name=%s\n", f.ID, f.Name)
+	}
+
+	// ── 9. Permissions ─────────────────────────────────────────
+	type permSeed struct {
+		FeatureName string
+		Code        string
+		Name        string
+		I18n        string
+		Type        string // menu|button|api
+		SortOrder   int
+	}
+	permSeeds := []permSeed{
+		// tenants
+		{"tenant-list", "tenants.list.view", "租戶列表頁面", `{"zh-TW":"租戶列表頁面","en":"Tenant List"}`, "menu", 1},
+		{"tenant-list", "tenants.list.create", "新增租戶", `{"zh-TW":"新增租戶","en":"Create Tenant"}`, "button", 2},
+		{"tenant-list", "tenants.list.update", "編輯租戶", `{"zh-TW":"編輯租戶","en":"Edit Tenant"}`, "button", 3},
+		{"tenant-list", "tenants.list.delete", "刪除租戶", `{"zh-TW":"刪除租戶","en":"Delete Tenant"}`, "button", 4},
+		// users
+		{"user-list", "users.list.view", "使用者列表頁面", `{"zh-TW":"使用者列表頁面","en":"User List"}`, "menu", 1},
+		{"user-list", "users.list.create", "新增使用者", `{"zh-TW":"新增使用者","en":"Create User"}`, "button", 2},
+		{"user-list", "users.list.update", "編輯使用者", `{"zh-TW":"編輯使用者","en":"Edit User"}`, "button", 3},
+		{"user-list", "users.list.delete", "刪除使用者", `{"zh-TW":"刪除使用者","en":"Delete User"}`, "button", 4},
+		{"user-list", "users.list.change_password", "修改密碼", `{"zh-TW":"修改密碼","en":"Change Password"}`, "button", 5},
+		// rbac
+		{"role-list", "rbac.roles.view", "角色管理頁面", `{"zh-TW":"角色管理頁面","en":"Role Management"}`, "menu", 1},
+		{"role-list", "rbac.roles.create", "新增角色", `{"zh-TW":"新增角色","en":"Create Role"}`, "button", 2},
+		{"role-list", "rbac.roles.update", "編輯角色", `{"zh-TW":"編輯角色","en":"Edit Role"}`, "button", 3},
+		{"role-list", "rbac.roles.delete", "刪除角色", `{"zh-TW":"刪除角色","en":"Delete Role"}`, "button", 4},
+		{"role-list", "rbac.roles.assign", "指派權限", `{"zh-TW":"指派權限","en":"Assign Permissions"}`, "button", 5},
+		// audit
+		{"audit-log", "audit.logs.view", "稽核日誌頁面", `{"zh-TW":"稽核日誌頁面","en":"Audit Log"}`, "menu", 1},
+		{"audit-log", "audit.logs.export", "匯出稽核日誌", `{"zh-TW":"匯出稽核日誌","en":"Export Logs"}`, "button", 2},
+		// settings
+		{"settings", "settings.view", "系統設定頁面", `{"zh-TW":"系統設定頁面","en":"System Settings"}`, "menu", 1},
+		{"settings", "settings.update", "修改系統設定", `{"zh-TW":"修改系統設定","en":"Update Settings"}`, "button", 2},
+	}
+
+	seededPerms := make([]permission.Permission, 0, len(permSeeds))
+	for _, ps := range permSeeds {
+		f := featureMap[ps.FeatureName]
+		p := permission.Permission{
+			FeatureID: f.ID,
+			Code:      ps.Code,
+			Name:      ps.Name,
+			I18n:      ps.I18n,
+			Type:      ps.Type,
+			SortOrder: ps.SortOrder,
+			CreatedAt: now,
+			UpdatedAt: now,
+		}
+		if err := db.Where(permission.Permission{Code: ps.Code}).
+			FirstOrCreate(&p).Error; err != nil {
+			return fmt.Errorf("upsert permission %q: %w", ps.Code, err)
+		}
+		seededPerms = append(seededPerms, p)
+		fmt.Printf("  permission: id=%d code=%s\n", p.ID, p.Code)
+	}
+
+	// ── 10. Assign permissions to super_admin ──────────────────
+	for _, perm := range seededPerms {
+		rp := role.RolePermission{
+			RoleID:       superRole.ID,
+			PermissionID: perm.ID,
+		}
+		if err := db.Clauses(clause.OnConflict{DoNothing: true}).
+			Create(&rp).Error; err != nil {
+			return fmt.Errorf("upsert role_permission for %s: %w", perm.Code, err)
+		}
+		// Add specific casbin p policy so GetPermissionCodesForUser returns real codes
+		rule := casbinRule{
+			Ptype: "p",
+			V0:    fmt.Sprintf("role:%d", superRole.ID),
+			V1:    perm.Code,
+			V2:    "access",
+		}
+		if err := db.Table("hyadmin_casbin_rules").
+			Clauses(clause.OnConflict{DoNothing: true}).
+			Create(&rule).Error; err != nil {
+			return fmt.Errorf("insert casbin p rule for %s: %w", perm.Code, err)
+		}
+	}
+	fmt.Printf("  role_permissions + casbin: assigned %d permissions to role %s\n",
+		len(seededPerms), superRole.Name)
 
 	return nil
 }
