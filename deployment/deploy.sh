@@ -45,5 +45,5 @@ nginx -t && systemctl reload nginx
 
 echo ""
 echo "Done.  (DB migrations 由 entrypoint 自動套用)"
-echo "  API:  http://127.0.0.1:8080/api/v1/health"
+echo "  API:  http://127.0.0.1:8081/api/v1/health"
 echo "  Log:  journalctl -u hyadmin-api -f"

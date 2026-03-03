@@ -16,7 +16,7 @@ After=network.target
 
 [Container]
 Image=ghcr.io/robert7528/hyadmin-api:latest
-PublishPort=127.0.0.1:8080:8080
+PublishPort=127.0.0.1:8081:8080
 
 # 連 host 上的 PostgreSQL
 AddHost=host-gateway:host-gateway
