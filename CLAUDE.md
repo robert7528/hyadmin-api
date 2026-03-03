@@ -4,7 +4,27 @@
 
 - **Windows local**: Source code editing only. No Go runtime available.
 - **GitHub**: `robert7528/hyadmin-api`
-- **Deploy**: Linux server (`/hysp/hyadmin-api/`) via Podman Quadlet + systemctl.
+- **CI/CD**: GitHub Actions → build & push `ghcr.io/robert7528/hyadmin-api:latest`
+- **Deploy**: Linux API server (`/hysp/hyadmin-api/`) via Podman Quadlet + systemctl.
+
+## Infrastructure Topology
+
+```
+[ Windows PC ]  →  git push  →  [ GitHub Actions ]
+                                       │ build & push image
+                                       ▼
+                               ghcr.io/robert7528/hyadmin-api:latest
+                                       │ podman pull (deploy.sh)
+                                       ▼
+[ Linux API Server ]  ←─── DATABASE_DSN ───→  [ Linux DB Server ]
+  Podman + Quadlet                                  PostgreSQL
+  /etc/hyadmin/api.env
+```
+
+- **API Server**：跑 hyadmin-api 容器，不裝 PostgreSQL
+- **DB Server**：獨立 Linux 主機，跑 PostgreSQL
+- **連線設定**：`DATABASE_DSN` 直接指向 DB Server IP/hostname（非 host-gateway）
+- **Quadlet 的 `AddHost=host-gateway`**：僅供未來有需要連 API host 本機服務時使用，目前對 DB 連線無作用
 
 ## Project Structure
 
@@ -102,8 +122,9 @@ sudo bash /hysp/hyadmin-api/deployment/deploy.sh
 # 更新
 cd /hysp/hyadmin-api
 sudo bash deployment/deploy.sh
-# 步驟：git pull → env check → migrate admin → podman build
+# 步驟：git pull → env check → podman pull image
 #        → Quadlet 安裝 → systemctl restart → nginx reload
+# migrate 由 entrypoint.sh 在容器啟動時自動執行
 
 # go mod tidy（第一次或新增依賴後）
 go mod tidy
