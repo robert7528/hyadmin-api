@@ -1,6 +1,9 @@
 FROM golang:1.22-alpine AS builder
 
 RUN apk add --no-cache git
+ENV GOPROXY=direct
+ENV GONOSUMDB=github.com/robert7528/hycore
+ENV GONOSUMCHECK=github.com/robert7528/hycore
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
