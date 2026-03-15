@@ -9,6 +9,7 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.24.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/robert7528/hycore v0.1.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/tink-crypto/tink-go/v2 v2.2.0

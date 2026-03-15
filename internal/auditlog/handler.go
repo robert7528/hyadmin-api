@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	coreauditlog "github.com/robert7528/hycore/auditlog"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +27,7 @@ func (h *Handler) List(c *gin.Context) {
 		page = 1
 	}
 
-	q := h.db.Model(&AuditLog{})
+	q := h.db.Model(&coreauditlog.AuditLog{})
 	if tc != "" {
 		q = q.Where("tenant_code = ?", tc)
 	}
@@ -37,7 +38,7 @@ func (h *Handler) List(c *gin.Context) {
 	var total int64
 	q.Count(&total)
 
-	var logs []AuditLog
+	var logs []coreauditlog.AuditLog
 	if err := q.Order("created_at DESC").Offset((page - 1) * pageSize).Limit(pageSize).Find(&logs).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

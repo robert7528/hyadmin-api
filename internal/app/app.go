@@ -4,19 +4,20 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/hysp/hyadmin-api/internal/adminuser"
 	"github.com/hysp/hyadmin-api/internal/auditlog"
-	"github.com/hysp/hyadmin-api/internal/auth"
-	"github.com/hysp/hyadmin-api/internal/casbinx"
-	"github.com/hysp/hyadmin-api/internal/config"
-	"github.com/hysp/hyadmin-api/internal/crypto"
-	"github.com/hysp/hyadmin-api/internal/database"
+	localauth "github.com/hysp/hyadmin-api/internal/auth"
 	"github.com/hysp/hyadmin-api/internal/feature"
 	"github.com/hysp/hyadmin-api/internal/health"
-	"github.com/hysp/hyadmin-api/internal/logger"
 	"github.com/hysp/hyadmin-api/internal/pbmodule"
 	"github.com/hysp/hyadmin-api/internal/permission"
 	"github.com/hysp/hyadmin-api/internal/role"
 	"github.com/hysp/hyadmin-api/internal/server"
 	"github.com/hysp/hyadmin-api/internal/tenant"
+	coreauth "github.com/robert7528/hycore/auth"
+	"github.com/robert7528/hycore/casbinx"
+	"github.com/robert7528/hycore/config"
+	"github.com/robert7528/hycore/crypto"
+	"github.com/robert7528/hycore/database"
+	"github.com/robert7528/hycore/logger"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -38,7 +39,7 @@ func Run() error {
 
 			// Casbin enforcer
 			func(db *gorm.DB) (*casbin.Enforcer, error) {
-				return casbinx.NewEnforcer(db, "configs/rbac_model.conf")
+				return casbinx.NewEnforcer(db, "configs/rbac_model.conf", "hyadmin_casbin_rules")
 			},
 
 			// AdminUser domain
@@ -47,13 +48,13 @@ func Run() error {
 			adminuser.NewHandler,
 
 			// Auth domain
-			func(cfg *config.Config, userSvc *adminuser.Service) *auth.LocalProvider {
-				return auth.NewLocalProvider(userSvc, cfg.JWT.ExpiryHours)
+			func(cfg *config.Config, userSvc *adminuser.Service) *localauth.LocalProvider {
+				return localauth.NewLocalProvider(userSvc, cfg.JWT.ExpiryHours)
 			},
-			func(cfg *config.Config, lp *auth.LocalProvider) *auth.Service {
-				return auth.NewService(cfg, lp)
+			func(cfg *config.Config, lp *localauth.LocalProvider) *coreauth.Service {
+				return coreauth.NewService(cfg, lp)
 			},
-			auth.NewHandler,
+			coreauth.NewHandler,
 
 			// Feature domain
 			feature.NewRepository,

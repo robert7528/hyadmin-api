@@ -13,8 +13,8 @@ import (
 
 	"ariga.io/atlas-provider-gorm/gormschema"
 	"github.com/hysp/hyadmin-api/internal/adminuser"
-	"github.com/hysp/hyadmin-api/internal/auditlog"
-	"github.com/hysp/hyadmin-api/internal/database"
+	coreauditlog "github.com/robert7528/hycore/auditlog"
+	"github.com/robert7528/hycore/database"
 	"github.com/hysp/hyadmin-api/internal/feature"
 	"github.com/hysp/hyadmin-api/internal/pbmodule"
 	"github.com/hysp/hyadmin-api/internal/permission"
@@ -34,7 +34,7 @@ func main() {
 		&feature.Feature{},
 		&permission.Permission{},
 		&permission.RolePermission{},
-		&auditlog.AuditLog{},
+		&coreauditlog.AuditLog{},
 	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to load gorm schema: %v\n", err)

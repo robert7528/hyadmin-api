@@ -3,7 +3,7 @@ package adminuser
 import (
 	"fmt"
 
-	"github.com/hysp/hyadmin-api/internal/crypto"
+	"github.com/robert7528/hycore/crypto"
 	"golang.org/x/crypto/bcrypt"
 )
 

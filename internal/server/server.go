@@ -9,16 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hysp/hyadmin-api/internal/adminuser"
 	"github.com/hysp/hyadmin-api/internal/auditlog"
-	"github.com/hysp/hyadmin-api/internal/auth"
-	"github.com/hysp/hyadmin-api/internal/config"
-	"github.com/hysp/hyadmin-api/internal/database"
 	"github.com/hysp/hyadmin-api/internal/feature"
 	"github.com/hysp/hyadmin-api/internal/health"
-	"github.com/hysp/hyadmin-api/internal/middleware"
 	"github.com/hysp/hyadmin-api/internal/pbmodule"
 	"github.com/hysp/hyadmin-api/internal/permission"
 	"github.com/hysp/hyadmin-api/internal/role"
 	"github.com/hysp/hyadmin-api/internal/tenant"
+	coreauth "github.com/robert7528/hycore/auth"
+	coreauditlog "github.com/robert7528/hycore/auditlog"
+	"github.com/robert7528/hycore/config"
+	"github.com/robert7528/hycore/database"
+	"github.com/robert7528/hycore/middleware"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -49,8 +50,8 @@ type RouteParams struct {
 	Role       *role.Handler
 	RoleSvc    *role.Service
 	Permission *permission.Handler
-	Auth       *auth.Handler
-	AuthSvc    *auth.Service
+	Auth       *coreauth.Handler
+	AuthSvc    *coreauth.Service
 	AuditLog   *auditlog.Handler
 	Enforcer   *casbin.Enforcer
 	DBManager  *database.DBManager
@@ -137,7 +138,7 @@ func RegisterRoutes(p RouteParams) {
 		// Admin routes
 		admin := protected.Group("/admin")
 		admin.Use(middleware.PermissionMiddleware(p.Enforcer))
-		admin.Use(auditlog.AuditMiddleware(p.DB))
+		admin.Use(coreauditlog.AuditMiddleware(p.DB))
 		{
 			// Modules
 			mods := admin.Group("/modules")

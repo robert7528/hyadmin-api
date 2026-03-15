@@ -14,9 +14,9 @@ import (
 	"time"
 
 	"github.com/hysp/hyadmin-api/internal/adminuser"
-	"github.com/hysp/hyadmin-api/internal/config"
-	"github.com/hysp/hyadmin-api/internal/crypto"
-	"github.com/hysp/hyadmin-api/internal/database"
+	"github.com/robert7528/hycore/config"
+	"github.com/robert7528/hycore/crypto"
+	"github.com/robert7528/hycore/database"
 	"github.com/hysp/hyadmin-api/internal/feature"
 	"github.com/hysp/hyadmin-api/internal/pbmodule"
 	"github.com/hysp/hyadmin-api/internal/permission"

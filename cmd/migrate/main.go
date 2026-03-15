@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hysp/hyadmin-api/internal/config"
-	"github.com/hysp/hyadmin-api/internal/database"
-	"github.com/hysp/hyadmin-api/internal/migrator"
+	"github.com/robert7528/hycore/config"
+	"github.com/robert7528/hycore/database"
+	"github.com/robert7528/hycore/migrator"
 	"github.com/spf13/cobra"
 )
 

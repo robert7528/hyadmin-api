@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	coreauth "github.com/robert7528/hycore/auth"
+
 	"github.com/hysp/hyadmin-api/internal/adminuser"
 )
 
@@ -20,7 +22,7 @@ func NewLocalProvider(userSvc *adminuser.Service, expiryHours int) *LocalProvide
 
 func (p *LocalProvider) Name() string { return "local" }
 
-func (p *LocalProvider) Authenticate(_ context.Context, creds map[string]string) (*Claims, error) {
+func (p *LocalProvider) Authenticate(_ context.Context, creds map[string]string) (*coreauth.Claims, error) {
 	tenantCode := creds["tenant_code"]
 	username := creds["username"]
 	password := creds["password"]
@@ -34,5 +36,5 @@ func (p *LocalProvider) Authenticate(_ context.Context, creds map[string]string)
 		return nil, err
 	}
 
-	return newClaims(u.ID, u.TenantCode, u.Username, "local", p.expiry), nil
+	return coreauth.NewClaims(u.ID, u.TenantCode, u.Username, "local", p.expiry), nil
 }

@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hysp/hyadmin-api/internal/middleware"
+	"github.com/robert7528/hycore/middleware"
 )
 
 type Handler struct {
