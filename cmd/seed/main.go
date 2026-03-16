@@ -157,6 +157,16 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 			CreatedAt:   now,
 			UpdatedAt:   now,
 		},
+		{
+			Name:        "cert",
+			DisplayName: "憑證管理",
+			I18n:        `{"zh-TW":"憑證管理","en":"Certificates"}`,
+			Route:       "cert",
+			SortOrder:   10,
+			Enabled:     true,
+			CreatedAt:   now,
+			UpdatedAt:   now,
+		},
 	}
 	moduleMap := make(map[string]uint) // name → id
 	for i := range modules {
@@ -255,6 +265,9 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 		{"rbac", "role-list", "角色管理", `{"zh-TW":"角色管理","en":"Role Management"}`, "/roles", 1},
 		{"audit", "audit-log", "稽核日誌", `{"zh-TW":"稽核日誌","en":"Audit Log"}`, "", 1},
 		{"settings", "settings", "系統設定", `{"zh-TW":"系統設定","en":"System Settings"}`, "", 1},
+		// cert
+		{"cert", "cert-toolbox", "工具箱", `{"zh-TW":"工具箱","en":"Toolbox"}`, "/toolbox", 1},
+		{"cert", "cert-list", "憑證列表", `{"zh-TW":"憑證列表","en":"Certificates"}`, "/list", 2},
 	}
 	featureMap := make(map[string]feature.Feature) // name → feature
 	for _, fs := range featureSeeds {
@@ -310,6 +323,11 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 		// settings
 		{"settings", "settings.view", "系統設定頁面", `{"zh-TW":"系統設定頁面","en":"System Settings"}`, "menu", 1},
 		{"settings", "settings.update", "修改系統設定", `{"zh-TW":"修改系統設定","en":"Update Settings"}`, "button", 2},
+		// cert
+		{"cert-toolbox", "cert.toolbox.view", "工具箱頁面", `{"zh-TW":"工具箱頁面","en":"Toolbox"}`, "menu", 1},
+		{"cert-list", "cert.list.view", "憑證列表頁面", `{"zh-TW":"憑證列表頁面","en":"Certificate List"}`, "menu", 1},
+		{"cert-list", "cert.list.create", "新增憑證", `{"zh-TW":"新增憑證","en":"Create Certificate"}`, "button", 2},
+		{"cert-list", "cert.list.delete", "刪除憑證", `{"zh-TW":"刪除憑證","en":"Delete Certificate"}`, "button", 3},
 	}
 
 	seededPerms := make([]permission.Permission, 0, len(permSeeds))
