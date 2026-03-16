@@ -17,6 +17,7 @@ type PlatformModule struct {
 	Icon        string         `json:"icon"`
 	Route       string         `gorm:"not null" json:"route"`
 	URL         string         `json:"url"`
+	ApiURL      string         `json:"api_url"`
 	Description string         `json:"description"`
 	SortOrder   int            `gorm:"default:0" json:"sort_order"`
 	Enabled     bool           `gorm:"default:true" json:"enabled"`
@@ -31,6 +32,7 @@ type CreateModuleRequest struct {
 	Icon        string `json:"icon"`
 	Route       string `json:"route" binding:"required"`
 	URL         string `json:"url"`
+	ApiURL      string `json:"api_url"`
 	Description string `json:"description"`
 	SortOrder   int    `json:"sort_order"`
 }
@@ -39,6 +41,7 @@ type UpdateModuleRequest struct {
 	DisplayName string `json:"display_name"`
 	Icon        string `json:"icon"`
 	URL         string `json:"url"`
+	ApiURL      string `json:"api_url"`
 	Description string `json:"description"`
 	SortOrder   *int   `json:"sort_order"`
 	Enabled     *bool  `json:"enabled"`

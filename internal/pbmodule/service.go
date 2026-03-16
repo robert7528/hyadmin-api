@@ -22,6 +22,7 @@ func (s *Service) Create(req *CreateModuleRequest) (*PlatformModule, error) {
 		Icon:        req.Icon,
 		Route:       req.Route,
 		URL:         req.URL,
+		ApiURL:      req.ApiURL,
 		Description: req.Description,
 		SortOrder:   req.SortOrder,
 		Enabled:     true,
@@ -98,6 +99,9 @@ func (s *Service) Update(id uint, req *UpdateModuleRequest) error {
 	}
 	if req.URL != "" {
 		updates["url"] = req.URL
+	}
+	if req.ApiURL != "" {
+		updates["api_url"] = req.ApiURL
 	}
 	if req.Description != "" {
 		updates["description"] = req.Description

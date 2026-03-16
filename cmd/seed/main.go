@@ -162,6 +162,7 @@ func run(db *gorm.DB, enc crypto.Encryptor) error {
 			DisplayName: "憑證管理",
 			I18n:        `{"zh-TW":"憑證管理","en":"Certificates"}`,
 			Route:       "cert",
+			ApiURL:      "/hycert-api",
 			SortOrder:   10,
 			Enabled:     true,
 			CreatedAt:   now,
