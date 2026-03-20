@@ -268,6 +268,7 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		// cert
 		{"cert", "cert-toolbox", "工具箱", `{"zh-TW":"工具箱","en":"Toolbox"}`, "/toolbox", 1},
 		{"cert", "cert-list", "憑證列表", `{"zh-TW":"憑證列表","en":"Certificates"}`, "/list", 2},
+		{"cert", "cert-deployments", "部署目標", `{"zh-TW":"部署目標","en":"Deployments"}`, "/deployments", 3},
 	}
 	featureMap := make(map[string]feature.Feature) // name → feature
 	for _, fs := range featureSeeds {
@@ -328,6 +329,10 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"cert-list", "cert.list.view", "憑證列表頁面", `{"zh-TW":"憑證列表頁面","en":"Certificate List"}`, "menu", 1},
 		{"cert-list", "cert.list.create", "新增憑證", `{"zh-TW":"新增憑證","en":"Create Certificate"}`, "button", 2},
 		{"cert-list", "cert.list.delete", "刪除憑證", `{"zh-TW":"刪除憑證","en":"Delete Certificate"}`, "button", 3},
+		// cert deployments
+		{"cert-deployments", "cert.deployments.view", "部署目標頁面", `{"zh-TW":"部署目標頁面","en":"Deployments"}`, "menu", 1},
+		{"cert-deployments", "cert.deployments.create", "新增部署", `{"zh-TW":"新增部署","en":"Create Deployment"}`, "button", 2},
+		{"cert-deployments", "cert.deployments.delete", "刪除部署", `{"zh-TW":"刪除部署","en":"Delete Deployment"}`, "button", 3},
 	}
 
 	seededPerms := make([]permission.Permission, 0, len(permSeeds))
