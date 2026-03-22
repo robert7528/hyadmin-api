@@ -268,7 +268,8 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		// cert
 		{"cert", "cert-toolbox", "工具箱", `{"zh-TW":"工具箱","en":"Toolbox"}`, "/toolbox", 1},
 		{"cert", "cert-list", "憑證列表", `{"zh-TW":"憑證列表","en":"Certificates"}`, "/list", 2},
-		{"cert", "cert-deployments", "部署目標", `{"zh-TW":"部署目標","en":"Deployments"}`, "/deployments", 3},
+		{"cert", "cert-csrs", "CSR 管理", `{"zh-TW":"CSR 管理","en":"CSR Management"}`, "/csrs", 3},
+		{"cert", "cert-deployments", "部署目標", `{"zh-TW":"部署目標","en":"Deployments"}`, "/deployments", 4},
 	}
 	featureMap := make(map[string]feature.Feature) // name → feature
 	for _, fs := range featureSeeds {
@@ -329,6 +330,10 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"cert-list", "cert.list.view", "憑證列表頁面", `{"zh-TW":"憑證列表頁面","en":"Certificate List"}`, "menu", 1},
 		{"cert-list", "cert.list.create", "新增憑證", `{"zh-TW":"新增憑證","en":"Create Certificate"}`, "button", 2},
 		{"cert-list", "cert.list.delete", "刪除憑證", `{"zh-TW":"刪除憑證","en":"Delete Certificate"}`, "button", 3},
+		// cert csrs
+		{"cert-csrs", "cert.csrs.view", "CSR 管理頁面", `{"zh-TW":"CSR 管理頁面","en":"CSR Management"}`, "menu", 1},
+		{"cert-csrs", "cert.csrs.create", "產生 CSR", `{"zh-TW":"產生 CSR","en":"Generate CSR"}`, "button", 2},
+		{"cert-csrs", "cert.csrs.delete", "刪除 CSR", `{"zh-TW":"刪除 CSR","en":"Delete CSR"}`, "button", 3},
 		// cert deployments
 		{"cert-deployments", "cert.deployments.view", "部署目標頁面", `{"zh-TW":"部署目標頁面","en":"Deployments"}`, "menu", 1},
 		{"cert-deployments", "cert.deployments.create", "新增部署", `{"zh-TW":"新增部署","en":"Create Deployment"}`, "button", 2},
