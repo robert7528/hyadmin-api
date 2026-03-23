@@ -270,6 +270,7 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"cert", "cert-list", "憑證列表", `{"zh-TW":"憑證列表","en":"Certificates"}`, "/list", 2},
 		{"cert", "cert-csrs", "CSR 管理", `{"zh-TW":"CSR 管理","en":"CSR Management"}`, "/csrs", 3},
 		{"cert", "cert-deployments", "部署目標", `{"zh-TW":"部署目標","en":"Deployments"}`, "/deployments", 4},
+		{"cert", "cert-agents", "Agent 管理", `{"zh-TW":"Agent 管理","en":"Agents"}`, "/agents", 5},
 	}
 	featureMap := make(map[string]feature.Feature) // name → feature
 	for _, fs := range featureSeeds {
