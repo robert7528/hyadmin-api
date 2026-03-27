@@ -272,6 +272,8 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"cert", "cert-deployments", "部署目標", `{"zh-TW":"部署目標","en":"Deployments"}`, "/deployments", 4},
 		{"cert", "cert-agents", "Agent 管理", `{"zh-TW":"Agent 管理","en":"Agents"}`, "/agents", 5},
 		{"cert", "cert-tokens", "Token 管理", `{"zh-TW":"Token 管理","en":"Tokens"}`, "/tokens", 6},
+		{"cert", "cert-acme-accounts", "ACME 帳戶", `{"zh-TW":"ACME 帳戶","en":"ACME Accounts"}`, "/acme/accounts", 7},
+		{"cert", "cert-acme-orders", "ACME 訂單", `{"zh-TW":"ACME 訂單","en":"ACME Orders"}`, "/acme/orders", 8},
 	}
 	featureMap := make(map[string]feature.Feature) // name → feature
 	for _, fs := range featureSeeds {
@@ -340,6 +342,23 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"cert-deployments", "cert.deployments.view", "部署目標頁面", `{"zh-TW":"部署目標頁面","en":"Deployments"}`, "menu", 1},
 		{"cert-deployments", "cert.deployments.create", "新增部署", `{"zh-TW":"新增部署","en":"Create Deployment"}`, "button", 2},
 		{"cert-deployments", "cert.deployments.delete", "刪除部署", `{"zh-TW":"刪除部署","en":"Delete Deployment"}`, "button", 3},
+		// cert agents
+		{"cert-agents", "cert.agents.view", "Agent 管理頁面", `{"zh-TW":"Agent 管理頁面","en":"Agent Management"}`, "menu", 1},
+		{"cert-agents", "cert.agents.delete", "刪除 Agent", `{"zh-TW":"刪除 Agent","en":"Delete Agent"}`, "button", 2},
+		// cert tokens
+		{"cert-tokens", "cert.tokens.view", "Token 管理頁面", `{"zh-TW":"Token 管理頁面","en":"Token Management"}`, "menu", 1},
+		{"cert-tokens", "cert.tokens.create", "新增 Token", `{"zh-TW":"新增 Token","en":"Create Token"}`, "button", 2},
+		{"cert-tokens", "cert.tokens.delete", "刪除 Token", `{"zh-TW":"刪除 Token","en":"Delete Token"}`, "button", 3},
+		// cert acme accounts
+		{"cert-acme-accounts", "cert.acme.accounts.view", "ACME 帳戶頁面", `{"zh-TW":"ACME 帳戶頁面","en":"ACME Accounts"}`, "menu", 1},
+		{"cert-acme-accounts", "cert.acme.accounts.create", "新增 ACME 帳戶", `{"zh-TW":"新增 ACME 帳戶","en":"Create ACME Account"}`, "button", 2},
+		{"cert-acme-accounts", "cert.acme.accounts.update", "編輯 ACME 帳戶", `{"zh-TW":"編輯 ACME 帳戶","en":"Edit ACME Account"}`, "button", 3},
+		{"cert-acme-accounts", "cert.acme.accounts.delete", "刪除 ACME 帳戶", `{"zh-TW":"刪除 ACME 帳戶","en":"Delete ACME Account"}`, "button", 4},
+		// cert acme orders
+		{"cert-acme-orders", "cert.acme.orders.view", "ACME 訂單頁面", `{"zh-TW":"ACME 訂單頁面","en":"ACME Orders"}`, "menu", 1},
+		{"cert-acme-orders", "cert.acme.orders.create", "申請 ACME 憑證", `{"zh-TW":"申請 ACME 憑證","en":"Request ACME Certificate"}`, "button", 2},
+		{"cert-acme-orders", "cert.acme.orders.renew", "續約 ACME 憑證", `{"zh-TW":"續約 ACME 憑證","en":"Renew ACME Certificate"}`, "button", 3},
+		{"cert-acme-orders", "cert.acme.orders.cancel", "取消 ACME 訂單", `{"zh-TW":"取消 ACME 訂單","en":"Cancel ACME Order"}`, "button", 4},
 	}
 
 	seededPerms := make([]permission.Permission, 0, len(permSeeds))
