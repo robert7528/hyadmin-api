@@ -274,6 +274,7 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"cert", "cert-tokens", "Token 管理", `{"zh-TW":"Token 管理","en":"Tokens"}`, "/tokens", 6},
 		{"cert", "cert-acme-accounts", "ACME 帳戶", `{"zh-TW":"ACME 帳戶","en":"ACME Accounts"}`, "/acme/accounts", 7},
 		{"cert", "cert-acme-orders", "ACME 訂單", `{"zh-TW":"ACME 訂單","en":"ACME Orders"}`, "/acme/orders", 8},
+		{"cert", "cert-health", "健康檢查", `{"zh-TW":"健康檢查","en":"Health Check"}`, "/health", 9},
 	}
 	featureMap := make(map[string]feature.Feature) // name → feature
 	for _, fs := range featureSeeds {
@@ -359,6 +360,8 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"cert-acme-orders", "cert.acme.orders.create", "申請 ACME 憑證", `{"zh-TW":"申請 ACME 憑證","en":"Request ACME Certificate"}`, "button", 2},
 		{"cert-acme-orders", "cert.acme.orders.renew", "續約 ACME 憑證", `{"zh-TW":"續約 ACME 憑證","en":"Renew ACME Certificate"}`, "button", 3},
 		{"cert-acme-orders", "cert.acme.orders.cancel", "取消 ACME 訂單", `{"zh-TW":"取消 ACME 訂單","en":"Cancel ACME Order"}`, "button", 4},
+		// cert health
+		{"cert-health", "cert.health.view", "健康檢查頁面", `{"zh-TW":"健康檢查頁面","en":"Health Check"}`, "menu", 1},
 	}
 
 	seededPerms := make([]permission.Permission, 0, len(permSeeds))
