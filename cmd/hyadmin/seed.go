@@ -266,15 +266,15 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 		{"audit", "audit-log", "稽核日誌", `{"zh-TW":"稽核日誌","en":"Audit Log"}`, "", 1},
 		{"settings", "settings", "系統設定", `{"zh-TW":"系統設定","en":"System Settings"}`, "", 1},
 		// cert
-		{"cert", "cert-toolbox", "工具箱", `{"zh-TW":"工具箱","en":"Toolbox"}`, "/toolbox", 1},
-		{"cert", "cert-list", "憑證列表", `{"zh-TW":"憑證列表","en":"Certificates"}`, "/list", 2},
-		{"cert", "cert-csrs", "CSR 管理", `{"zh-TW":"CSR 管理","en":"CSR Management"}`, "/csrs", 3},
-		{"cert", "cert-deployments", "部署目標", `{"zh-TW":"部署目標","en":"Deployments"}`, "/deployments", 4},
-		{"cert", "cert-agents", "Agent 管理", `{"zh-TW":"Agent 管理","en":"Agents"}`, "/agents", 5},
-		{"cert", "cert-tokens", "Token 管理", `{"zh-TW":"Token 管理","en":"Tokens"}`, "/tokens", 6},
-		{"cert", "cert-acme-accounts", "ACME 帳戶", `{"zh-TW":"ACME 帳戶","en":"ACME Accounts"}`, "/acme/accounts", 7},
-		{"cert", "cert-acme-orders", "ACME 訂單", `{"zh-TW":"ACME 訂單","en":"ACME Orders"}`, "/acme/orders", 8},
-		{"cert", "cert-health", "健康檢查", `{"zh-TW":"健康檢查","en":"Health Check"}`, "/health", 9},
+		{"cert", "cert-health", "健康檢查", `{"zh-TW":"健康檢查","en":"Health Check"}`, "/health", 1},
+		{"cert", "cert-toolbox", "工具箱", `{"zh-TW":"工具箱","en":"Toolbox"}`, "/toolbox", 2},
+		{"cert", "cert-list", "憑證列表", `{"zh-TW":"憑證列表","en":"Certificates"}`, "/list", 3},
+		{"cert", "cert-csrs", "CSR 管理", `{"zh-TW":"CSR 管理","en":"CSR Management"}`, "/csrs", 4},
+		{"cert", "cert-deployments", "部署目標", `{"zh-TW":"部署目標","en":"Deployments"}`, "/deployments", 5},
+		{"cert", "cert-agents", "Agent 管理", `{"zh-TW":"Agent 管理","en":"Agents"}`, "/agents", 6},
+		{"cert", "cert-tokens", "Token 管理", `{"zh-TW":"Token 管理","en":"Tokens"}`, "/tokens", 7},
+		{"cert", "cert-acme-accounts", "ACME 帳戶", `{"zh-TW":"ACME 帳戶","en":"ACME Accounts"}`, "/acme/accounts", 8},
+		{"cert", "cert-acme-orders", "ACME 訂單", `{"zh-TW":"ACME 訂單","en":"ACME Orders"}`, "/acme/orders", 9},
 	}
 	featureMap := make(map[string]feature.Feature) // name → feature
 	for _, fs := range featureSeeds {
@@ -293,6 +293,13 @@ func runSeed(db *gorm.DB, enc crypto.Encryptor) error {
 			FirstOrCreate(&f).Error; err != nil {
 			return fmt.Errorf("upsert feature %q: %w", fs.Name, err)
 		}
+		// Update sort_order and display fields in case they changed
+		db.Model(&f).Updates(map[string]interface{}{
+			"sort_order":   fs.SortOrder,
+			"display_name": fs.DisplayName,
+			"i18n":         fs.I18n,
+			"path":         fs.Path,
+		})
 		featureMap[f.Name] = f
 		fmt.Printf("  feature: id=%d name=%s\n", f.ID, f.Name)
 	}
